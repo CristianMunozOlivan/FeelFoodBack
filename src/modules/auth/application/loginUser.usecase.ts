@@ -9,7 +9,7 @@ export class LoginUser {
     private readonly tokens: TokenService
   ) {}
 
-  async execute(input: { email: string; password: string }): Promise<{ token: string }> {
+  async execute(input: { email: string; password: string }): Promise<{ token: string, user: { id: string; email: string; nombre: string } }> {
     const email = input.email.trim().toLowerCase();
     if (!email || !input.password) throw new Error("CREDENTIALS_REQUIRED");
 
@@ -21,6 +21,6 @@ export class LoginUser {
 
     if (!user.id) throw new Error("USER_WITHOUT_ID");
     const token = await this.tokens.sign({ id: user.id, email: user.email });
-    return { token };
+    return { token, user: { id: user.id, email: user.email, nombre: user.nombre } };
   }
 }

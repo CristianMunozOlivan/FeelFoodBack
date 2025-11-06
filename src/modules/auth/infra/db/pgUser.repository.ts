@@ -1,4 +1,4 @@
-import { Pool } from "pg";
+import { Pool } from 'pg';
 import User from "../../domain/user.entity";
 import { UserRepository } from "../../domain/user.repository.port";
 

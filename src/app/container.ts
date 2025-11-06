@@ -37,7 +37,7 @@ import { CreateAlimento } from '../modules/alimentos/application/alimento.useCas
 export function buildContainer() {
   // Pool de conexiones compartido 
   const pool = new Pool({
-    connectionString: env.DB_URL,
+    connectionString: process.env.DATABASE_URL,
     ssl: env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
   });
 

@@ -3,7 +3,7 @@ import { AlimentosController } from "./alimentos.controller";
 
 export function buildAlimentosRouter(ctrl: AlimentosController): Router {
   const r = Router();
-  r.get("/", ctrl.list);
-  r.post("/", ctrl.create);
+  r.get("/list", ctrl.list);
+  r.post("/create", ctrl.create);
   return r;
 }
