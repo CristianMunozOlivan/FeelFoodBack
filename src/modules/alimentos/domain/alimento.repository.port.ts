@@ -7,5 +7,8 @@ export type CreateAlimentoDTO = {
 
 export interface AlimentoRepository {
   list(): Promise<Alimento[]>;
+  getById(id: string): Promise<Alimento | null>;
   create(input: CreateAlimentoDTO): Promise<Alimento>;
+  delete(id: string): Promise<boolean>;
+  update(id: string, input: CreateAlimentoDTO): Promise<Alimento>;
 }
