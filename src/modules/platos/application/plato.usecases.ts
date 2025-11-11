@@ -58,3 +58,10 @@ export class RemoveIngredientePlato {
     await this.repo.removeIngrediente(ingrediente_id);
   }
 }
+export class UpdateIngredientePlato {
+  constructor(private readonly repo: PlatoRepository) {} 
+  async execute(ingrediente_id: string, input: { cantidad: number; unidad: string }): Promise<PlatoIngredienteDTO> {
+    const updated = await this.repo.updateIngrediente(ingrediente_id, input);
+    return updated.toDTO();
+  }
+}

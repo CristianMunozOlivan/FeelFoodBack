@@ -11,6 +11,6 @@ export function buildPlatosRouter(ctrl: PlatosController): Router {
   r.get("/:platoId/ingredientes", ctrl.listIngredientes);
   r.post("/:platoId/ingredientes", ctrl.addIngrediente);
   r.delete("/ingredientes/:ingredienteId", ctrl.removeIngrediente);
-
+  r.patch("/ingredientes/:ingredienteId", ctrl.updateIngrediente);
   return r;
 }

@@ -29,4 +29,5 @@ export interface PlatoRepository {
   addIngrediente(input: AddIngredienteDTO): Promise<PlatoIngrediente>;
   listIngredientes(plato_id: string): Promise<PlatoIngrediente[]>;
   removeIngrediente(ingrediente_id: string): Promise<void>;
+  updateIngrediente(ingrediente_id: string, input: { cantidad: number; unidad: string }): Promise<PlatoIngrediente>;
 }

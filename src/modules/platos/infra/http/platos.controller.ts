@@ -4,7 +4,8 @@ import {
   ListPlatos, CreatePlato,
   AddIngredientePlato, ListIngredientesPlato, RemoveIngredientePlato,
   UpdatePlato,
-  DeletePlato
+  DeletePlato,
+  UpdateIngredientePlato
 } from "../../application/plato.usecases";
 
 // ──────────────────────────────────────────────────────────
@@ -36,7 +37,8 @@ export class PlatosController {
     private readonly deletePlatoUC: DeletePlato,
     private readonly addIngUC: AddIngredientePlato,
     private readonly listIngUC: ListIngredientesPlato,
-    private readonly removeIngUC: RemoveIngredientePlato
+    private readonly removeIngUC: RemoveIngredientePlato,
+    private readonly updateIngUC: UpdateIngredientePlato
   ) {}
 
   // GET /platos
@@ -112,6 +114,19 @@ export class PlatosController {
       const ingrediente_id = z.string().uuid().parse(req.params.ingredienteId);
       await this.removeIngUC.execute(ingrediente_id);
       res.status(204).end();
+    } catch (e) { next(e); }
+  };
+
+  // PATCH /platos/ingredientes/:ingredienteId
+  updateIngrediente = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const ingrediente_id = z.string().uuid().parse(req.params.ingredienteId);
+      const input = z.object({
+        cantidad: z.number().positive(),
+        unidad: z.string().min(1),
+      }).parse(req.body ?? {});
+      const out = await this.updateIngUC.execute(ingrediente_id, input);
+      res.json(out);
     } catch (e) { next(e); }
   };
 }

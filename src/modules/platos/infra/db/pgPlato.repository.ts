@@ -70,4 +70,15 @@ export class PgPlatoRepository implements PlatoRepository {
   async removeIngrediente(ingrediente_id: string): Promise<void> {
     await this.pool.query(`DELETE FROM plato_ingredientes WHERE id = $1`, [ingrediente_id]);
   }
+
+  async updateIngrediente(ingrediente_id: string, input: { cantidad: number; unidad: string }): Promise<PlatoIngrediente> {
+    const { rows } = await this.pool.query(
+      `UPDATE plato_ingredientes
+       SET cantidad = $2, unidad = $3
+       WHERE id = $1
+       RETURNING id, plato_id, alimento_id, cantidad, unidad`,
+      [ingrediente_id, input.cantidad, input.unidad]
+    );
+    return PlatoIngrediente.fromRow(rows[0]);
+  }
 }

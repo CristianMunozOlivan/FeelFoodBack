@@ -13,7 +13,7 @@ import { AuthController } from '../modules/auth/infra/http/auth.controller';
 // Platos
 import { PgPlatoRepository } from '../modules/platos/infra/db/pgPlato.repository';
 import { PlatosController } from '../modules/platos/infra/http/platos.controller';
-import { ListPlatos, CreatePlato, AddIngredientePlato, ListIngredientesPlato, RemoveIngredientePlato, DeletePlato, UpdatePlato } from '../modules/platos/application/plato.usecases';
+import { ListPlatos, CreatePlato, AddIngredientePlato, ListIngredientesPlato, RemoveIngredientePlato, DeletePlato, UpdatePlato, UpdateIngredientePlato } from '../modules/platos/application/plato.usecases';
 
 // Catálogo
 import { PgCatalogRepository } from '../modules/catalog/infra/db/pgCatalog.repository';
@@ -60,8 +60,9 @@ const deletePlatoUC = new DeletePlato(platoRepo);
 const addIngUC = new AddIngredientePlato(platoRepo);
 const listIngUC = new ListIngredientesPlato(platoRepo);
 const removeIngUC = new RemoveIngredientePlato(platoRepo);
+const updateIngUC = new UpdateIngredientePlato(platoRepo);
 
-const platosController = new PlatosController(listPlatosUC, createPlatoUC, updatePlatoUC, deletePlatoUC, addIngUC, listIngUC, removeIngUC);
+const platosController = new PlatosController(listPlatosUC, createPlatoUC, updatePlatoUC, deletePlatoUC, addIngUC, listIngUC, removeIngUC, updateIngUC);
 
   // Catálogo 
   const catalogRepo = new PgCatalogRepository(pool);
