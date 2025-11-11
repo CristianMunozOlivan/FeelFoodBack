@@ -5,7 +5,7 @@ export function buildAlimentosRouter(ctrl: AlimentosController): Router {
   const r = Router();
   r.get("/list", ctrl.list);
   r.post("/create", ctrl.create);
-  r.put("/:id", ctrl.update);
+  r.patch("/:id", ctrl.update);
   r.delete("/:id", ctrl.delete);
   return r;
 }

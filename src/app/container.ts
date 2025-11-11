@@ -13,7 +13,7 @@ import { AuthController } from '../modules/auth/infra/http/auth.controller';
 // Platos
 import { PgPlatoRepository } from '../modules/platos/infra/db/pgPlato.repository';
 import { PlatosController } from '../modules/platos/infra/http/platos.controller';
-import { ListPlatos, CreatePlato, AddIngredientePlato, ListIngredientesPlato, RemoveIngredientePlato } from '../modules/platos/application/plato.usecases';
+import { ListPlatos, CreatePlato, AddIngredientePlato, ListIngredientesPlato, RemoveIngredientePlato, DeletePlato, UpdatePlato } from '../modules/platos/application/plato.usecases';
 
 // Catálogo
 import { PgCatalogRepository } from '../modules/catalog/infra/db/pgCatalog.repository';
@@ -31,7 +31,7 @@ import { DiasController } from '../modules/dias/infra/http/dias.controller';
 // Alimentos
 import { PgAlimentoRepository } from '../modules/alimentos/infra/db/pgAlimento.repository';
 import { AlimentosController } from '../modules/alimentos/infra/http/alimentos.controller';
-import { ListAlimentos } from '../modules/alimentos/application/alimento.useCase';
+import { DeleteAlimento, ListAlimentos, UpdateAlimento } from '../modules/alimentos/application/alimento.useCase';
 import { CreateAlimento } from '../modules/alimentos/application/alimento.useCase';
 
 export function buildContainer() {
@@ -55,10 +55,13 @@ export function buildContainer() {
 const platoRepo = new PgPlatoRepository(pool);
 const listPlatosUC = new ListPlatos(platoRepo);
 const createPlatoUC = new CreatePlato(platoRepo);
+const updatePlatoUC = new UpdatePlato(platoRepo);
+const deletePlatoUC = new DeletePlato(platoRepo);
 const addIngUC = new AddIngredientePlato(platoRepo);
 const listIngUC = new ListIngredientesPlato(platoRepo);
 const removeIngUC = new RemoveIngredientePlato(platoRepo);
-const platosController = new PlatosController(listPlatosUC, createPlatoUC, addIngUC, listIngUC, removeIngUC);
+
+const platosController = new PlatosController(listPlatosUC, createPlatoUC, updatePlatoUC, deletePlatoUC, addIngUC, listIngUC, removeIngUC);
 
   // Catálogo 
   const catalogRepo = new PgCatalogRepository(pool);
@@ -83,7 +86,9 @@ const platosController = new PlatosController(listPlatosUC, createPlatoUC, addIn
   const alimentoRepo = new PgAlimentoRepository(pool);
   const listAlimentosUC = new ListAlimentos(alimentoRepo);
   const createAlimentoUC = new CreateAlimento(alimentoRepo);
-  const alimentosController = new AlimentosController(listAlimentosUC, createAlimentoUC);
+  const deleteAlimentoUC = new DeleteAlimento(alimentoRepo);
+  const updateAlimentoUC = new UpdateAlimento(alimentoRepo);
+  const alimentosController = new AlimentosController(listAlimentosUC, createAlimentoUC, deleteAlimentoUC, updateAlimentoUC);
 
   return {
     authController,

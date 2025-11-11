@@ -1,7 +1,7 @@
 import { Pool } from "pg";
 import Plato from "../../domain/plato.entity";
 import PlatoIngrediente from "../../domain/ingrediente.entity";
-import { PlatoRepository, CreatePlatoDTO, AddIngredienteDTO } from "../../domain/plato.repository.port";
+import { PlatoRepository, CreatePlatoDTO, AddIngredienteDTO, UpdatePlatoDTO } from "../../domain/plato.repository.port";
 
 export class PgPlatoRepository implements PlatoRepository {
   constructor(private readonly pool: Pool) {}
@@ -25,6 +25,25 @@ export class PgPlatoRepository implements PlatoRepository {
       [input.usuario_id, input.nombre]
     );
     return Plato.fromRow(rows[0]);
+  }
+
+  async update(input: UpdatePlatoDTO): Promise<Plato> {
+    const { rows } = await this.pool.query(
+      `UPDATE platos_personales
+        SET nombre = $3
+        WHERE id = $1 AND usuario_id = $2
+        RETURNING id, usuario_id, nombre`,
+      [input.plato_id, input.usuario_id, input.nombre]
+    );
+    return Plato.fromRow(rows[0]);
+  }
+  
+  async delete(plato_id: string, usuario_id: string): Promise<void> {
+    await this.pool.query(
+      `DELETE FROM platos_personales
+        WHERE id = $1 AND usuario_id = $2`,
+      [plato_id, usuario_id]
+    );
   }
 
   async addIngrediente(input: AddIngredienteDTO): Promise<PlatoIngrediente> {

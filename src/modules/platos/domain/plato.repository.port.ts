@@ -13,9 +13,18 @@ export type AddIngredienteDTO = {
   unidad: string;
 };
 
+export type UpdatePlatoDTO = {
+  plato_id: string;
+  usuario_id: string;
+  nombre: string;
+};
+
+
 export interface PlatoRepository {
   listByUsuario(usuario_id: string): Promise<Plato[]>;
   create(input: CreatePlatoDTO): Promise<Plato>;
+  update(input: UpdatePlatoDTO): Promise<Plato>;
+  delete(plato_id: string, usuario_id: string): Promise<void>;
 
   addIngrediente(input: AddIngredienteDTO): Promise<PlatoIngrediente>;
   listIngredientes(plato_id: string): Promise<PlatoIngrediente[]>;

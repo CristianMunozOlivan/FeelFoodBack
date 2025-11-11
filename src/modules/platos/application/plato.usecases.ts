@@ -1,4 +1,4 @@
-import type { PlatoRepository, CreatePlatoDTO, AddIngredienteDTO } from "../domain/plato.repository.port";
+import type { PlatoRepository, CreatePlatoDTO, AddIngredienteDTO, UpdatePlatoDTO } from "../domain/plato.repository.port";
 import type { PlatoDTO } from "../domain/plato.entity";
 import type { PlatoIngredienteDTO } from "../domain/ingrediente.entity";
 
@@ -21,13 +21,28 @@ export class CreatePlato {
   }
 }
 
-export class AddIngredientePlato {
+export class UpdatePlato {
   constructor(private readonly repo: PlatoRepository) {}
-  async execute(input: AddIngredienteDTO): Promise<PlatoIngredienteDTO> {
-    const ing = await this.repo.addIngrediente(input);
-    return ing.toDTO();
+  async execute(input: UpdatePlatoDTO): Promise<PlatoDTO> {
+    const updated = await this.repo.update(input);
+    return updated.toDTO();
   }
 }
+
+export class DeletePlato {
+  constructor(private readonly repo: PlatoRepository) {}
+  async execute(plato_id: string, usuario_id: string): Promise<void> {
+    await this.repo.delete(plato_id, usuario_id);
+  }
+}
+
+export class AddIngredientePlato {
+  constructor(private repo: PlatoRepository) {}
+  execute(input: { plato_id: string; alimento_id: string; cantidad: number; unidad: string }) {
+    return this.repo.addIngrediente(input);
+  }
+}
+
 
 export class ListIngredientesPlato {
   constructor(private readonly repo: PlatoRepository) {}

@@ -6,8 +6,10 @@ export function buildPlatosRouter(ctrl: PlatosController): Router {
 
   r.get("/", ctrl.list);                                  // ?usuario_id=...
   r.post("/", ctrl.create);
+  r.patch("/:platoId", ctrl.update);
+  r.delete("/:platoId", ctrl.delete);                     // ?usuario_id=...
   r.get("/:platoId/ingredientes", ctrl.listIngredientes);
-  r.post("/ingredientes", ctrl.addIngrediente);
+  r.post("/:platoId/ingredientes", ctrl.addIngrediente);
   r.delete("/ingredientes/:ingredienteId", ctrl.removeIngrediente);
 
   return r;

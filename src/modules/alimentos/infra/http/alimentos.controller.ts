@@ -77,14 +77,15 @@ export class AlimentosController {
     try {
       const { id } = idSchema.parse(req.params);
       const data = updateSchema.parse(req.body);
-
+      console.log(data);
+      console.log(id);
       // normaliza calorías a null si no viene (mantiene la coherencia del DTO)
       if (typeof data.nombre !== "string") {
         throw new Error("El campo 'nombre' es obligatorio y debe ser un string");
       }
       const input = {
         nombre: data.nombre,
-        calorias: data.calorias === undefined ? null : data.calorias,
+        calorias: data.calorias!,
       };
 
       const out = await this.updateAlimento.execute(id, input);
