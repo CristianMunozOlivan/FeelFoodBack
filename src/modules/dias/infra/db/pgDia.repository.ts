@@ -56,7 +56,7 @@ export class PgDiaRepository implements DiaRepository {
     return Comida.fromRow(rows[0]);
   }
 
-  async listComidasByDia(dia_id: string): Promise<Comida[]> {
+ async listComidasByDia(dia_id: string): Promise<Comida[]> {
     const { rows } = await this.pool.query(
       `SELECT id, dia_id, tipo_id, hora
        FROM comidas_diarias
@@ -66,7 +66,7 @@ export class PgDiaRepository implements DiaRepository {
     );
     return rows.map(Comida.fromRow);
   }
-
+  
   async addConsumo(input: AddConsumoDTO): Promise<Consumo> {
     const { rows } = await this.pool.query(
       `INSERT INTO alimentos_consumidos (comida_id, alimento_id, cantidad, unidad)

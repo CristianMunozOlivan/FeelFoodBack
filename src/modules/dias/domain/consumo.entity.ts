@@ -20,6 +20,12 @@ export default class Consumo {
     return c;
   }
   toDTO(): ConsumoDTO {
-    return { id: this.id, comida_id: this.comida_id, alimento_id: this.alimento_id, cantidad: this.cantidad, unidad: this.unidad };
+    return {
+      id: this.id,
+      comida_id: this.comida_id,
+      alimento_id: this.alimento_id,
+      cantidad: this.cantidad,
+      unidad: this.unidad
+    };
   }
 }

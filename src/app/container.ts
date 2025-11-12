@@ -24,7 +24,8 @@ import { ListEstadosAnimo, ListTiposComida } from '../modules/catalog/applicatio
 import { PgDiaRepository } from '../modules/dias/infra/db/pgDia.repository';
 import {
   CreateDia, ListDiasByUsuario, CloseDia,
-  AddComida, ListComidasDeDia, AddAlimentoAComida, RemoveAlimentoDeComida
+  AddComida, ListComidasDeDia, AddAlimentoAComida, RemoveAlimentoDeComida,
+  AddPlatoAComida
 } from '../modules/dias/application/dias.usecase';
 import { DiasController } from '../modules/dias/infra/http/dias.controller';
 
@@ -79,8 +80,9 @@ const platosController = new PlatosController(listPlatosUC, createPlatoUC, updat
   const listComidasUC = new ListComidasDeDia(diaRepo);
   const addConsumoUC = new AddAlimentoAComida(diaRepo);
   const removeConsumoUC = new RemoveAlimentoDeComida(diaRepo);
+  const addPlatoUC = new AddPlatoAComida(diaRepo, platoRepo);
   const diasController = new DiasController(
-    createDiaUC, listDiasUC, closeDiaUC, addComidaUC, listComidasUC, addConsumoUC, removeConsumoUC
+    createDiaUC, listDiasUC, closeDiaUC, addComidaUC, listComidasUC, addConsumoUC, removeConsumoUC, addPlatoUC,
   );
 
   // Alimentos → con casos de uso inyectados (repo requiere pool)
