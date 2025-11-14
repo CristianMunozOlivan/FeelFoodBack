@@ -3,7 +3,8 @@ import { z } from "zod";
 import {
   CreateDia, ListDiasByUsuario, CloseDia,
   AddComida, ListComidasDeDia, AddAlimentoAComida, RemoveAlimentoDeComida,
-  AddPlatoAComida
+  AddPlatoAComida,
+  ListComidaPlatosDeComida
 } from "../../application/dias.usecase";
 
 // ──────────────────────────────────────────────────────────
@@ -47,9 +48,14 @@ const addConsumoSchema = z.object({
 const addPlatoParams = z.object({
   comidaId: z.string().uuid(),
 });
+
 const addPlatoBody = z.object({
   plato_id: z.string().uuid(),
   multiplicador: z.coerce.number().positive().optional(),
+});
+
+const listComidaPlatosParams = z.object({
+  comidaId: z.string().uuid(),
 });
 
 export class DiasController {
@@ -62,6 +68,7 @@ export class DiasController {
     private readonly addConsumoUC: AddAlimentoAComida,
     private readonly removeConsumoUC: RemoveAlimentoDeComida,
     private readonly addPlatoUC: AddPlatoAComida,
+    private readonly listComidaPlatosUC: ListComidaPlatosDeComida
   ) {}
 
   // POST /dias
@@ -127,13 +134,22 @@ export class DiasController {
     } catch (e) { next(e); }
   };
 
-  // NUEVO: POST /dias/comidas/:comidaId/platos
+   // GET /dias/comidas/:comidaId/platos-grupo
+  listComidaPlatos = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { comidaId } = listComidaPlatosParams.parse(req.params);
+      const out = await this.listComidaPlatosUC.execute(comidaId);
+      res.json(out);
+    } catch (e) { next(e); }
+  };
+
+  // POST /dias/comidas/:comidaId/platos
   addPlatoAComida = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { comidaId } = addPlatoParams.parse(req.params);
       const { plato_id, multiplicador } = addPlatoBody.parse(req.body ?? {});
       const out = await this.addPlatoUC.execute({ comida_id: comidaId, plato_id, multiplicador });
-      res.status(201).json(out); // array de ConsumoDTO creados
+      res.status(201).json(out);
     } catch (e) { next(e); }
   };
 }

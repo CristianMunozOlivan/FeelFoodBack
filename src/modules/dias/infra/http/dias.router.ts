@@ -15,5 +15,6 @@ export function buildDiasRouter(ctrl: DiasController): Router {
   r.delete("/consumos/:consumoId", ctrl.removeConsumo); // Eliminar consumo
 
   r.post("/comidas/:comidaId/platos", ctrl.addPlatoAComida);
+  r.get("/comidas/:comidaId/platos-grupo", ctrl.listComidaPlatos);
   return r;
 }

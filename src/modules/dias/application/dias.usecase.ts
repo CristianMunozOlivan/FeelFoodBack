@@ -8,11 +8,9 @@ import type {
 import type { DiaDTO } from "../domain/dia.entity";
 import type { ComidaDTO } from "../domain/comida.entity";
 import type { ConsumoDTO } from "../domain/consumo.entity";
-
-// 👇 añade este import (ajusta el path si es necesario)
 import type { PlatoRepository } from "../../platos/domain/plato.repository.port";
+import { ComidaPlatoDTO } from "../domain/comidaPlato.entity";
 
-// ========== EXISTENTES ==========
 export class CreateDia {
   constructor(private readonly repo: DiaRepository) {}
   async execute(input: CreateDiaDTO): Promise<DiaDTO> {
@@ -69,6 +67,7 @@ export class RemoveAlimentoDeComida {
 }
 
 // ========== NUEVO: AÑADIR PLATO A COMIDA ==========
+
 export class AddPlatoAComida {
   constructor(
     private readonly diaRepo: DiaRepository,
@@ -78,15 +77,22 @@ export class AddPlatoAComida {
   async execute(input: {
     comida_id: string;
     plato_id: string;
-    multiplicador?: number; // opcional: escala cantidades
+    multiplicador?: number;
   }): Promise<ConsumoDTO[]> {
     const mult = input.multiplicador && input.multiplicador > 0 ? input.multiplicador : 1;
 
-    // 1) Traer ingredientes del plato
-    const ingredientes = await this.platoRepo.listIngredientes(input.plato_id);
-    // Esperamos objetos con: { alimento_id: string, cantidad: number, unidad: string }
+    // 1) Crear grupo plato↔comida
+    const grp = await this.diaRepo.addComidaPlato({
+      comida_id: input.comida_id,
+      plato_id: input.plato_id,
+      multiplicador: mult,
+    });
 
-    // 2) Crear un consumo por ingrediente
+    // 2) Traer ingredientes del plato
+    const ingredientes = await this.platoRepo.listIngredientes(input.plato_id);
+    // { id, plato_id, alimento_id, cantidad, unidad }
+
+    // 3) Insertar consumos con referencia al grupo
     const creados: ConsumoDTO[] = [];
     for (const ing of ingredientes) {
       const dto: AddConsumoDTO = {
@@ -94,12 +100,21 @@ export class AddPlatoAComida {
         alimento_id: ing.alimento_id,
         cantidad: Number((ing.cantidad ?? 0) * mult),
         unidad: ing.unidad,
+        comida_plato_id: grp.id, // <--- referencia de agrupación
       };
       const c = await this.diaRepo.addConsumo(dto);
-      // c puede ser entidad; normalizamos a DTO si el repo devuelve entidad
-      creados.push(typeof (c as any).toDTO === "function" ? (c as any).toDTO() : (c as any));
+      creados.push(c.toDTO ? c.toDTO() : (c as any));
     }
 
     return creados;
+  }
+}
+
+export class ListComidaPlatosDeComida {
+  constructor(private readonly repo: DiaRepository) {}
+
+  async execute(comida_id: string): Promise<ComidaPlatoDTO[]> {
+    const cps = await this.repo.listComidaPlatosByComida(comida_id);
+    return cps.map((cp) => cp.toDTO());
   }
 }
