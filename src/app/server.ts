@@ -11,6 +11,8 @@ import { buildCatalogRouter } from '../modules/catalog/infra/http/catalog.router
 import { buildDiasRouter } from '../modules/dias/infra/http/dias.router';
 import { buildAlimentosRouter } from '../modules/alimentos/infra/http/alimentos.router';
 import { buildPlatosRouter } from '../modules/platos/infra/http/platos.router';
+import { buildSensacionesRouter } from '../modules/sensaciones/infra/http/sensaciones.router';
+
 
 // Auth middleware
 import { buildRequireAuth /*, buildOptionalAuth */ } from '../modules/auth/infra/http/auth.middleware';
@@ -27,6 +29,7 @@ export function createServer() {
     diasController,
     alimentosController,
     platosController,
+    sensacionesController,
   } = buildContainer();
 
   // Middlewares de auth
@@ -43,6 +46,7 @@ export function createServer() {
   app.use('/dias', requireAuth, buildDiasRouter(diasController));
   app.use('/alimentos', requireAuth, buildAlimentosRouter(alimentosController));
   app.use('/platos', requireAuth, buildPlatosRouter(platosController));
+  app.use('/sensaciones', requireAuth, buildSensacionesRouter(sensacionesController));
 
   // Si alguna ruta quieres que sea semipública:
   // app.use('/alimentos', optionalAuth, buildAlimentosRouter(alimentosController));
