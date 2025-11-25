@@ -50,6 +50,9 @@ import {
   UpdateSensacionAlimento,
   ListSintomas,
 } from '../modules/sensaciones/application/sensaciones.useCase';
+import { PgUsuarioRepository } from '../modules/usuario/infra/db/pgUsuario.repository';
+import { GetUsuarioPerfil, UpdateUsuarioEmail, UpdateUsuarioPassword } from '../modules/usuario/application/usuario.useCase';
+import { UsuarioController } from '../modules/usuario/infra/http/usuario.controller';
 
 export function buildContainer() {
   // Pool de conexiones compartido 
@@ -66,7 +69,16 @@ export function buildContainer() {
   const loginUser = new LoginUser(userRepo, hasher, tokenService);
   const authController = new AuthController(registerUser, loginUser);
 
-
+  // Usuario (perfil)
+  const usuarioRepo = new PgUsuarioRepository(pool);
+  const getPerfilUC = new GetUsuarioPerfil(usuarioRepo);
+  const updateEmailUC = new UpdateUsuarioEmail(usuarioRepo);
+  const updatePasswordUC = new UpdateUsuarioPassword(usuarioRepo, hasher);
+  const usuarioController = new UsuarioController(
+    getPerfilUC,
+    updateEmailUC,
+    updatePasswordUC,
+  );
 
   // Platos
   const platoRepo = new PgPlatoRepository(pool);
@@ -143,5 +155,6 @@ export function buildContainer() {
     diasController,
     alimentosController,
     sensacionesController,
+    usuarioController,
   };
 }

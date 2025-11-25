@@ -17,6 +17,7 @@ import { buildSensacionesRouter } from '../modules/sensaciones/infra/http/sensac
 // Auth middleware
 import { buildRequireAuth /*, buildOptionalAuth */ } from '../modules/auth/infra/http/auth.middleware';
 import { notFound } from './http/notFound';
+import { buildUsuarioRouter } from '../modules/usuario/infra/http/usuario.router';
 
 export function createServer() {
   const app = express();
@@ -30,6 +31,7 @@ export function createServer() {
     alimentosController,
     platosController,
     sensacionesController,
+    usuarioController,
   } = buildContainer();
 
   // Middlewares de auth
@@ -47,6 +49,7 @@ export function createServer() {
   app.use('/alimentos', requireAuth, buildAlimentosRouter(alimentosController));
   app.use('/platos', requireAuth, buildPlatosRouter(platosController));
   app.use('/sensaciones', requireAuth, buildSensacionesRouter(sensacionesController));
+  app.use('/usuario', requireAuth, buildUsuarioRouter(usuarioController));
 
   // Si alguna ruta quieres que sea semipública:
   // app.use('/alimentos', optionalAuth, buildAlimentosRouter(alimentosController));
