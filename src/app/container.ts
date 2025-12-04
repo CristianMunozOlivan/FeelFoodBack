@@ -55,12 +55,11 @@ import { GetUsuarioPerfil, UpdateUsuarioEmail, UpdateUsuarioPassword } from '../
 import { UsuarioController } from '../modules/usuario/infra/http/usuario.controller';
 
 export function buildContainer() {
-  // Pool de conexiones compartido 
   const pool = new Pool({
-    connectionString: process.env.DATABASE_URL,
+    connectionString: env.DATABASE_URL,
     ssl: env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
   });
-
+  
   // Auth
   const userRepo = new PgUserRepository(pool);
   const hasher = new BcryptHasher(10);
