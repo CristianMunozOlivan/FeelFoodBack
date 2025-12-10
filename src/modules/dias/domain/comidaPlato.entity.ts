@@ -1,3 +1,4 @@
+// Entidad ComidaPlato: relación entre comida y plato
 export type ComidaPlatoDTO = {
   id?: string;
   comida_id: string;
@@ -5,7 +6,7 @@ export type ComidaPlatoDTO = {
   multiplicador: number;
   created_at: string | null;
 };
-
+// Definición de la entidad ComidaPlato y su DTO
 export default class ComidaPlato {
   public id?: string;
 
@@ -20,18 +21,18 @@ export default class ComidaPlato {
     this.multiplicador = multiplicador;
     this.created_at = created_at ?? null;
   }
-
-  static fromRow(r: any): ComidaPlato {
-    const cp = new ComidaPlato(
-      r.comida_id,
-      r.plato_id,
-      Number(r.multiplicador ?? 1),
-      r.created_at ?? null
+  // Convierte una fila de BD en una entidad ComidaPlato
+  static fromRow(row: any): ComidaPlato {
+    const comidaPlato = new ComidaPlato(
+      row.comida_id,
+      row.plato_id,
+      Number(row.multiplicador ?? 1),
+      row.created_at ?? null
     );
-    cp.id = r.id;
-    return cp;
+    comidaPlato.id = row.id;
+    return comidaPlato;
   }
-
+  // Convierte la entidad ComidaPlato en un DTO
   toDTO(): ComidaPlatoDTO {
     return {
       id: this.id,

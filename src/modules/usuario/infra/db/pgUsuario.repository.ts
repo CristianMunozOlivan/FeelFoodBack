@@ -1,12 +1,10 @@
-// src/modules/usuario/infra/db/pgUsuario.repository.ts
-
 import { Pool } from "pg";
 import Usuario from "../../domain/usuario.entity";
 import type { UsuarioRepository } from "../../domain/usuario.repository.port";
-
+// Implementación del repositorio de Usuario usando PostgreSQL
 export class PgUsuarioRepository implements UsuarioRepository {
   constructor(private readonly pool: Pool) {}
-
+  // Busca un usuario por su ID
   async findById(id: string): Promise<Usuario | null> {
     const res = await this.pool.query(
       `SELECT id, email, password, fecha_creacion
@@ -18,7 +16,7 @@ export class PgUsuarioRepository implements UsuarioRepository {
     if (res.rows.length === 0) return null;
     return Usuario.fromRow(res.rows[0]);
   }
-
+  // Actualiza el email de un usuario
   async updateEmail(id: string, email: string): Promise<Usuario | null> {
     const res = await this.pool.query(
       `UPDATE usuarios
@@ -31,7 +29,7 @@ export class PgUsuarioRepository implements UsuarioRepository {
     if (res.rows.length === 0) return null;
     return Usuario.fromRow(res.rows[0]);
   }
-
+  // Actualiza el hash de la contraseña de un usuario
   async updatePasswordHash(id: string, passwordHash: string): Promise<void> {
     await this.pool.query(
       `UPDATE usuarios

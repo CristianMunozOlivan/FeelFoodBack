@@ -1,18 +1,16 @@
-// src/modules/Sensaciones/domain/sensacionComida.entity.ts
 import type { SintomaDTO } from "./sintoma.entity";
-
+// DTO para la sensación de comida
 export type SensacionComidaDTO = {
   id: string;
   comida_id: string;
   estado_animo_id: number | null;
   saciedad: number | null;
   energia: number | null;
-  /** Aquí ya devolvemos objetos con id + nombre */
   sintomas: SintomaDTO[] | null;
   notas: string | null;
   creado_en: string;
 };
-
+// Definición de la entidad SensacionComida y su DTO
 export default class SensacionComida {
   constructor(
     public id: string,
@@ -24,20 +22,20 @@ export default class SensacionComida {
     public notas: string | null,
     public creado_en: string,
   ) {}
-
-  static fromRow(r: any): SensacionComida {
+  // Convierte una fila de BD en una entidad SensacionComida
+  static fromRow(row: any): SensacionComida {
     return new SensacionComida(
-      r.id,
-      r.comida_id,
-      r.estado_animo_id !== null ? Number(r.estado_animo_id) : null,
-      r.saciedad !== null ? Number(r.saciedad) : null,
-      r.energia !== null ? Number(r.energia) : null,
-      Array.isArray(r.sintomas) ? r.sintomas.map((n: any) => Number(n)) : null,
-      r.notas ?? null,
-      r.creado_en,
+      row.id,
+      row.comida_id,
+      row.estado_animo_id !== null ? Number(row.estado_animo_id) : null,
+      row.saciedad !== null ? Number(row.saciedad) : null,
+      row.energia !== null ? Number(row.energia) : null,
+      Array.isArray(row.sintomas) ? row.sintomas.map((sintoma: any) => Number(sintoma)) : null,
+      row.notas ?? null,
+      row.creado_en,
     );
   }
-
+  // Convierte la entidad SensacionComida en un DTO
   toDTO(sintomasDetallados: SintomaDTO[] | null): SensacionComidaDTO {
     return {
       id: this.id,

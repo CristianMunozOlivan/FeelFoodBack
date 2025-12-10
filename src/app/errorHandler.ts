@@ -1,34 +1,34 @@
 import type { Request, Response, NextFunction } from "express";
 import { ZodError } from "zod";
 
-/** Mapear códigos de error de Postgres a HTTP */
+// Mapear códigos de error de Postgres a HTTP 
 const PG_CODE_TO_STATUS: Record<string, number> = {
   "23505": 409, // unique_violation
-  "23503": 409, // foreign_key_violation (puedes usar 422 si prefieres)
+  "23503": 409, // foreign_key_violation
   "22P02": 400, // invalid_text_representation (UUID mal formado, etc.)
 };
 
-/** Mapear mensajes de dominio a HTTP */
+// Mapear mensajes de dominio a HTTP
 const DOMAIN_TO_STATUS: Record<string, number> = {
   EMAIL_TAKEN: 409,             // email ya registrado
   INVALID_CREDENTIALS: 401,     // login inválido
   CREDENTIALS_REQUIRED: 400,    // falta usuario/contraseña o token
-
-  "Día no encontrado": 404,
-  "Alimento no encontrado": 404,
-  "Plato no encontrado": 404,
+  "Día no encontrado": 404,     // día no existe
+  "Alimento no encontrado": 404,// alimento no existe
+  "Plato no encontrado": 404,   // plato no existe
 };
 
+// Middleware global de manejo de errores
 export function errorHandler(err: any, _req: Request, res: Response, _next: NextFunction) {
-  // 1) Validación de entrada (Zod)
+  // Validación de entrada (Zod)
   if (err instanceof ZodError) {
     return res.status(422).json({
-      error: "validation_error",
+      error: "Error de validación",
       issues: err.issues.map(i => ({ path: i.path, message: i.message })),
     });
   }
 
-  // 2) Errores de Postgres
+  // Errores de Postgres
   if (err && typeof err === "object" && err.code && typeof err.code === "string") {
     const status = PG_CODE_TO_STATUS[err.code];
     if (status) {
@@ -40,12 +40,12 @@ export function errorHandler(err: any, _req: Request, res: Response, _next: Next
     }
   }
 
-  // 3) Errores de dominio conocidos (por mensaje)
+  // Errores de dominio conocidos (por mensaje)
   if (err && typeof err.message === "string" && DOMAIN_TO_STATUS[err.message]) {
     return res.status(DOMAIN_TO_STATUS[err.message]).json({ error: err.message });
   }
 
-  // 4) Fallback
+  // Fallback
   // En producción, evita loguear datos sensibles
   console.error(err);
   return res.status(500).json({ error: "internal_error" });

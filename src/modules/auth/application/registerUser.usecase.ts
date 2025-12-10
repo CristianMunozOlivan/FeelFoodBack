@@ -2,12 +2,15 @@ import type { UserRepository } from "../domain/user.repository.port";
 import type { Hasher } from "../domain/hasher.port";
 import type { UserDTO } from "../domain/user.entity";
 
+// Caso de uso: registro de usuario
 export class RegisterUser {
+  // Inyección de dependencias
   constructor(
     private readonly users: UserRepository,
     private readonly hasher: Hasher
   ) {}
-
+  // Ejecuta el caso de uso
+  // Devuelve datos básicos del usuario registrado
   async execute(input: { email: string; nombre: string; password: string }): Promise<UserDTO> {
     const email = input.email.trim().toLowerCase();
     const nombre = input.nombre.trim();
@@ -20,6 +23,6 @@ export class RegisterUser {
 
     const passwordHash = await this.hasher.hash(input.password);
     const created = await this.users.create(email, nombre, passwordHash);
-    return created.toDTO(); // seguro: no incluye hash
+    return created.toDTO();
   }
 }

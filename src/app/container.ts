@@ -1,24 +1,20 @@
-
 import { env } from './env';
 import { Pool } from 'pg';
-
+// Auth
 import { PgUserRepository } from '../modules/auth/infra/db/pgUser.repository';
 import { BcryptHasher } from '../modules/auth/infra/crypto/bcrypt.hasher';
 import { JwtTokenService } from '../modules/auth/infra/crypto/jwt.token.service';
 import { RegisterUser } from '../modules/auth/application/registerUser.usecase';
 import { LoginUser } from '../modules/auth/application/loginUser.usecase';
 import { AuthController } from '../modules/auth/infra/http/auth.controller';
-
 // Platos
 import { PgPlatoRepository } from '../modules/platos/infra/db/pgPlato.repository';
 import { PlatosController } from '../modules/platos/infra/http/platos.controller';
 import { ListPlatos, CreatePlato, AddIngredientePlato, ListIngredientesPlato, RemoveIngredientePlato, DeletePlato, UpdatePlato, UpdateIngredientePlato } from '../modules/platos/application/plato.usecases';
-
 // Catálogo
 import { PgCatalogRepository } from '../modules/catalog/infra/db/pgCatalog.repository';
 import { CatalogController } from '../modules/catalog/infra/http/catalog.controller';
 import { ListEstadosAnimo, ListTiposComida } from '../modules/catalog/application/catalog.usecases';
-
 // Días
 import { PgDiaRepository } from '../modules/dias/infra/db/pgDia.repository';
 import {
@@ -28,13 +24,11 @@ import {
   ListComidaPlatosDeComida
 } from '../modules/dias/application/dias.usecase';
 import { DiasController } from '../modules/dias/infra/http/dias.controller';
-
 // Alimentos
 import { PgAlimentoRepository } from '../modules/alimentos/infra/db/pgAlimento.repository';
 import { AlimentosController } from '../modules/alimentos/infra/http/alimentos.controller';
 import { DeleteAlimento, ListAlimentos, UpdateAlimento } from '../modules/alimentos/application/alimento.useCase';
 import { CreateAlimento } from '../modules/alimentos/application/alimento.useCase';
-
 // Sensaciones
 import { PgSensacionesRepository } from '../modules/sensaciones/infra/db/pgSensaciones.repository';
 import { SensacionesController } from '../modules/sensaciones/infra/http/sensaciones.controller';
@@ -53,13 +47,12 @@ import {
 import { PgUsuarioRepository } from '../modules/usuario/infra/db/pgUsuario.repository';
 import { GetUsuarioPerfil, UpdateUsuarioEmail, UpdateUsuarioPassword } from '../modules/usuario/application/usuario.useCase';
 import { UsuarioController } from '../modules/usuario/infra/http/usuario.controller';
-
+// Contenedor de dependencias
 export function buildContainer() {
   const pool = new Pool({
     connectionString: env.DATABASE_URL,
     ssl: env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
   });
-  
   // Auth
   const userRepo = new PgUserRepository(pool);
   const hasher = new BcryptHasher(10);
@@ -67,18 +60,12 @@ export function buildContainer() {
   const registerUser = new RegisterUser(userRepo, hasher);
   const loginUser = new LoginUser(userRepo, hasher, tokenService);
   const authController = new AuthController(registerUser, loginUser);
-
   // Usuario (perfil)
   const usuarioRepo = new PgUsuarioRepository(pool);
   const getPerfilUC = new GetUsuarioPerfil(usuarioRepo);
   const updateEmailUC = new UpdateUsuarioEmail(usuarioRepo);
   const updatePasswordUC = new UpdateUsuarioPassword(usuarioRepo, hasher);
-  const usuarioController = new UsuarioController(
-    getPerfilUC,
-    updateEmailUC,
-    updatePasswordUC,
-  );
-
+  const usuarioController = new UsuarioController(getPerfilUC,updateEmailUC,updatePasswordUC);
   // Platos
   const platoRepo = new PgPlatoRepository(pool);
   const listPlatosUC = new ListPlatos(platoRepo);
@@ -89,9 +76,7 @@ export function buildContainer() {
   const listIngUC = new ListIngredientesPlato(platoRepo);
   const removeIngUC = new RemoveIngredientePlato(platoRepo);
   const updateIngUC = new UpdateIngredientePlato(platoRepo);
-
   const platosController = new PlatosController(listPlatosUC, createPlatoUC, updatePlatoUC, deletePlatoUC, addIngUC, listIngUC, removeIngUC, updateIngUC);
-
   // Alimentos 
   const alimentoRepo = new PgAlimentoRepository(pool);
   const listAlimentosUC = new ListAlimentos(alimentoRepo);
@@ -99,13 +84,11 @@ export function buildContainer() {
   const deleteAlimentoUC = new DeleteAlimento(alimentoRepo);
   const updateAlimentoUC = new UpdateAlimento(alimentoRepo);
   const alimentosController = new AlimentosController(listAlimentosUC, createAlimentoUC, deleteAlimentoUC, updateAlimentoUC);
-
   // Catálogo 
   const catalogRepo = new PgCatalogRepository(pool);
   const listEstadosUC = new ListEstadosAnimo(catalogRepo);
   const listTiposUC = new ListTiposComida(catalogRepo);
   const catalogController = new CatalogController(listEstadosUC, listTiposUC);
-
   // Días 
   const diaRepo = new PgDiaRepository(pool);
   const createDiaUC = new CreateDia(diaRepo);
@@ -118,9 +101,16 @@ export function buildContainer() {
   const addPlatoUC = new AddPlatoAComida(diaRepo, platoRepo);
   const listComidaPlatosUC = new ListComidaPlatosDeComida(diaRepo);
   const diasController = new DiasController(
-    createDiaUC, listDiasUC, closeDiaUC, addComidaUC, listComidasUC, addConsumoUC, removeConsumoUC, addPlatoUC, listComidaPlatosUC
+    createDiaUC,
+    listDiasUC,
+    closeDiaUC,
+    addComidaUC,
+    listComidasUC,
+    addConsumoUC,
+    removeConsumoUC,
+    addPlatoUC,
+    listComidaPlatosUC
   );
-
   // Sensaciones
   const sensacionesRepo = new PgSensacionesRepository(pool);
   const getSensacionComidaUC = new GetSensacionComida(sensacionesRepo);
@@ -133,7 +123,6 @@ export function buildContainer() {
   const createSensacionAlimentoUC = new CreateSensacionAlimento(sensacionesRepo);
   const updateSensacionAlimentoUC = new UpdateSensacionAlimento(sensacionesRepo);
   const listSintomasUC = new ListSintomas(sensacionesRepo);
-
   const sensacionesController = new SensacionesController(
     getSensacionComidaUC,
     createSensacionComidaUC,
@@ -146,7 +135,7 @@ export function buildContainer() {
     updateSensacionAlimentoUC,
     listSintomasUC,
   );
-
+// Retornar controladores
   return {
     authController,
     platosController,

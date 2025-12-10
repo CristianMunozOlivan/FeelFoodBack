@@ -8,9 +8,10 @@ import {
 } from "../../domain/dia.repository.port";
 import ComidaPlato from "../../domain/comidaPlato.entity";
 
+// Implementación del repositorio de Días usando PostgreSQL
 export class PgDiaRepository implements DiaRepository {
   constructor(private readonly pool: Pool) {}
-
+  // Crea un nuevo día
   async createDia(input: CreateDiaDTO): Promise<Dia> {
     const { rows } = await this.pool.query(
       `INSERT INTO dias_registro (usuario_id, fecha, estado_animo_inicio_id, notas)
@@ -20,7 +21,7 @@ export class PgDiaRepository implements DiaRepository {
     );
     return Dia.fromRow(rows[0]);
   }
-
+  // Lista días por usuario con filtros opcionales de fecha
   async listDiasByUsuario(usuario_id: string, desde?: string, hasta?: string): Promise<Dia[]> {
     const params: any[] = [usuario_id];
     let where = `usuario_id = $1`;
@@ -36,7 +37,7 @@ export class PgDiaRepository implements DiaRepository {
     );
     return rows.map(Dia.fromRow);
   }
-
+  // Cierra un día actualizando el estado de ánimo final
   async closeDia(input: CloseDiaDTO): Promise<Dia | null> {
     const { rows } = await this.pool.query(
       `UPDATE dias_registro
@@ -47,7 +48,7 @@ export class PgDiaRepository implements DiaRepository {
     );
     return rows[0] ? Dia.fromRow(rows[0]) : null;
   }
-
+  // Añade una comida a un día
   async addComida(input: AddComidaDTO): Promise<Comida> {
     const { rows } = await this.pool.query(
       `INSERT INTO comidas_diarias (dia_id, tipo_id, hora)
@@ -57,21 +58,21 @@ export class PgDiaRepository implements DiaRepository {
     );
     return Comida.fromRow(rows[0]);
   }
-
+  // Añade un plato a una comida
   async addComidaPlato(input: AddComidaPlatoDTO): Promise<ComidaPlato> {
     const mult = input.multiplicador && input.multiplicador > 0 ? input.multiplicador : 1;
-    const q = `
+    const query = `
       INSERT INTO comidas_platos (comida_id, plato_id, multiplicador)
       VALUES ($1, $2, $3)
       RETURNING id, comida_id, plato_id, multiplicador, created_at
     `;
-    const { rows } = await this.pool.query(q, [input.comida_id, input.plato_id, mult]);
+    const { rows } = await this.pool.query(query, [input.comida_id, input.plato_id, mult]);
     return ComidaPlato.fromRow(rows[0]);
   }
 
-
+  // Lista comidas de un día, incluyendo sus consumos
   async listComidasByDia(dia_id: string): Promise<Comida[]> {
-    // 1) Obtenemos las comidas del día
+    // Obtenemos las comidas del día
     const { rows } = await this.pool.query(
       `SELECT id, dia_id, tipo_id, hora
        FROM comidas_diarias
@@ -83,9 +84,9 @@ export class PgDiaRepository implements DiaRepository {
 
     if (comidas.length === 0) return [];
 
-    // 2) Obtenemos todos los consumos de esas comidas en un solo query
+    // Obtenemos todos los consumos de esas comidas en un solo query
     const comidaIds = comidas
-      .map((c) => c.id)
+      .map((comida) => comida.id)
       .filter((id): id is string => Boolean(id));
 
     const { rows: consumosRows } = await this.pool.query(
@@ -98,25 +99,25 @@ export class PgDiaRepository implements DiaRepository {
 
     const consumos = consumosRows.map(Consumo.fromRow);
 
-    // 3) Agrupamos consumos por comida_id
+    // Agrupamos consumos por comida_id
     const map = new Map<string, Consumo[]>();
-    for (const cons of consumos) {
-      if (!cons.comida_id) continue;
-      if (!map.has(cons.comida_id)) map.set(cons.comida_id, []);
-      map.get(cons.comida_id)!.push(cons);
+    for (const consumo of consumos) {
+      if (!consumo.comida_id) continue;
+      if (!map.has(consumo.comida_id)) map.set(consumo.comida_id, []);
+      map.get(consumo.comida_id)!.push(consumo);
     }
 
-    // 4) Enganchamos consumos a cada comida
-    comidas.forEach((c) => {
-      const key = c.id!;
-      c.setConsumos(map.get(key) ?? []);
+    // Enganchamos consumos a cada comida
+    comidas.forEach((comida) => {
+      const key = comida.id!;
+      comida.setConsumos(map.get(key) ?? []);
     });
 
     return comidas;
   }
-
+  // Añade un consumo (alimento) a una comida
   async addConsumo(input: AddConsumoDTO): Promise<Consumo> {
-    const q = `
+    const query = `
       INSERT INTO alimentos_consumidos (comida_id, alimento_id, cantidad, unidad, comida_plato_id)
       VALUES ($1, $2, $3, $4, $5)
       RETURNING id, comida_id, alimento_id, cantidad, unidad, comida_plato_id
@@ -128,23 +129,23 @@ export class PgDiaRepository implements DiaRepository {
       input.unidad,
       input.comida_plato_id ?? null,
     ];
-    const { rows } = await this.pool.query(q, params);
+    const { rows } = await this.pool.query(query, params);
     return Consumo.fromRow(rows[0]);
   }
-
+  // Elimina un consumo por su ID
   async removeConsumo(consumo_id: string): Promise<void> {
     await this.pool.query(`DELETE FROM alimentos_consumidos WHERE id = $1`, [consumo_id]);
   }
 
   // Listar grupos plato-comida para el hook useComidaPlatoMap
   async listComidaPlatosByComida(comida_id: string): Promise<ComidaPlato[]> {
-    const q = `
+    const query = `
       SELECT id, comida_id, plato_id, multiplicador, created_at
       FROM comidas_platos
       WHERE comida_id = $1
       ORDER BY created_at NULLS FIRST, id
     `;
-    const { rows } = await this.pool.query(q, [comida_id]);
+    const { rows } = await this.pool.query(query, [comida_id]);
     return rows.map(ComidaPlato.fromRow);
   }
 }

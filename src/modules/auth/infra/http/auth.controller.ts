@@ -3,6 +3,7 @@ import { z } from "zod";
 import { RegisterUser } from "../../application/registerUser.usecase";
 import { LoginUser } from "../../application/loginUser.usecase";
 
+// Validaciones
 const registerSchema = z.object({
   email: z.string().email(),
   nombre: z.string().min(1),
@@ -14,12 +15,14 @@ const loginSchema = z.object({
   password: z.string().min(1),
 });
 
+// Controlador de Auth
 export class AuthController {
   constructor(
     private readonly registerUser: RegisterUser,
     private readonly loginUser: LoginUser
   ) {}
-
+// POST /auth/register
+// Registro de usuario
   register = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const data = registerSchema.parse(req.body);
@@ -31,6 +34,8 @@ export class AuthController {
     }
   };
 
+// POST /auth/login
+// Login de usuario
   login = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const data = loginSchema.parse(req.body);
@@ -38,7 +43,7 @@ export class AuthController {
       res.json(out);
     } catch (e: any) {
       if (e?.message === "INVALID_CREDENTIALS" || e?.message === "CREDENTIALS_REQUIRED") {
-        res.status(401).json({ error: "credenciales inválidas" }); return;
+        res.status(401).json({ error: "Credenciales incorrectas" }); return;
       }
       next(e);
     }

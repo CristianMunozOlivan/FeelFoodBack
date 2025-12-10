@@ -1,12 +1,13 @@
+// Entidad Dia: registro diario de estado de ánimo y notas del usuario
 export type DiaDTO = {
   id?: string;
   usuario_id: string;
-  fecha: string; // YYYY-MM-DD
+  fecha: string;
   estado_animo_inicio_id: number;
   estado_animo_final_id?: number | null;
   notas?: string | null;
 };
-
+// Definición de la entidad Dia y su DTO
 export default class Dia {
   public id?: string;
   constructor(
@@ -22,17 +23,19 @@ export default class Dia {
     this.estado_animo_final_id = estado_animo_final_id ?? null;
     this.notas = notas ?? null;
   }
+  // Convierte una fila de BD en una entidad Dia
   static fromRow(row: any): Dia {
-    const d = new Dia(
+    const dia = new Dia(
       row.usuario_id,
-      row.fecha, // viene como date -> pg lo serializa a string YYYY-MM-DD
+      row.fecha,
       row.estado_animo_inicio_id,
       row.estado_animo_final_id ?? null,
       row.notas ?? null
     );
-    d.id = row.id;
-    return d;
+    dia.id = row.id;
+    return dia;
   }
+  // Convierte la entidad Dia en un DTO
   toDTO(): DiaDTO {
     return {
       id: this.id,

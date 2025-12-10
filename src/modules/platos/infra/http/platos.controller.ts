@@ -8,27 +8,26 @@ import {
   UpdateIngredientePlato
 } from "../../application/plato.usecases";
 
-// ──────────────────────────────────────────────────────────
-// Schemas
-// ──────────────────────────────────────────────────────────
+// Validacion creacion plato
 const createSchema = z.object({
   nombre: z.string().min(1),
 });
-
+// Validacion actualizacion plato
 const updateSchema = z.object({
   nombre: z.string().min(1),
 });
 
-// params: usamos 'platoId' porque así lo tienes en tu router actual
+// Validacion parametro platoId
 const platoIdParamSchema = z.object({ platoId: z.string().uuid() });
 
-// body para añadir ingrediente (SIN plato_id; viene del path)
+// Validacion cuerpo para añadir ingrediente
 const addIngBodySchema = z.object({
   alimento_id: z.string().uuid(),
   cantidad: z.number().positive(),
   unidad: z.string().min(1),
 });
 
+// Controlador de Platos
 export class PlatosController {
   constructor(
     private readonly listPlatosUC: ListPlatos,
@@ -42,44 +41,48 @@ export class PlatosController {
   ) {}
 
   // GET /platos
+  // Lista platos del usuario autenticado
   list = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const usuario_id = (req as any).user.id as string;
-      const out = await this.listPlatosUC.execute(usuario_id);
-      res.json(out);
+      const platos = await this.listPlatosUC.execute(usuario_id);
+      res.json(platos);
     } catch (e) {
       next(e);
     }
   };
 
   // POST /platos
+  // Crea un nuevo plato para el usuario autenticado
   create = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const usuario_id = (req as any).user.id as string;
       const { nombre } = createSchema.parse(req.body ?? {});
-      const out = await this.createPlatoUC.execute({ usuario_id, nombre });
-      res.status(201).json(out);
+      const plato = await this.createPlatoUC.execute({ usuario_id, nombre });
+      res.status(201).json(plato);
     } catch (e) {
       next(e);
     }
   };
 
   // PATCH /platos/:platoId
+  // Actualiza un plato del usuario autenticado
   update = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const usuario_id = (req as any).user.id as string;
       const { platoId } = platoIdParamSchema.parse(req.params);
       const { nombre } = updateSchema.parse(req.body ?? {});
-      const out = await this.updatePlatoUC.execute({
+      const plato = await this.updatePlatoUC.execute({
         plato_id: platoId,
         usuario_id,
         nombre,
       });
-      res.json(out);
+      res.json(plato);
     } catch (e) { next(e); }
   };
 
   // DELETE /platos/:platoId
+  // Elimina un plato del usuario autenticado
   delete = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { platoId } = platoIdParamSchema.parse(req.params);
@@ -90,21 +93,23 @@ export class PlatosController {
   };
 
   // POST /platos/:platoId/ingredientes
+  // Añade un ingrediente a un plato
   addIngrediente = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { platoId } = platoIdParamSchema.parse(req.params);
       const { alimento_id, cantidad, unidad } = addIngBodySchema.parse(req.body ?? {});
-      const out = await this.addIngUC.execute({ plato_id: platoId, alimento_id, cantidad, unidad });
-      res.status(201).json(out);
+      const ingrediente = await this.addIngUC.execute({ plato_id: platoId, alimento_id, cantidad, unidad });
+      res.status(201).json(ingrediente);
     } catch (e) { next(e); }
   };
 
   // GET /platos/:platoId/ingredientes
+  // Lista ingredientes de un plato
   listIngredientes = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { platoId } = platoIdParamSchema.parse(req.params);
-      const out = await this.listIngUC.execute(platoId);
-      res.json(out);
+      const ingredientes = await this.listIngUC.execute(platoId);
+      res.json(ingredientes);
     } catch (e) { next(e); }
   };
 
@@ -125,8 +130,8 @@ export class PlatosController {
         cantidad: z.number().positive(),
         unidad: z.string().min(1),
       }).parse(req.body ?? {});
-      const out = await this.updateIngUC.execute(ingrediente_id, input);
-      res.json(out);
+      const ingrediente = await this.updateIngUC.execute(ingrediente_id, input);
+      res.json(ingrediente);
     } catch (e) { next(e); }
   };
 }

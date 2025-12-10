@@ -7,17 +7,17 @@ import {
   UpdateAlimento,
 } from "../../application/alimento.useCase";
 
-// Validaciones
+// Validacion para id
 const idSchema = z.object({
   id: z.string().uuid("id debe ser un UUID válido"),
 });
-
+// Validación para el create
 const createSchema = z.object({
   nombre: z.string().min(1, "nombre es obligatorio"),
   calorias: z.number().nullable().optional(),
 });
 
-// Para update permitimos parcial, pero exigimos al menos un campo
+// Validación para el update (al menos un campo)
 const updateSchema = z
   .object({
     nombre: z.string().min(1).optional(),
@@ -27,6 +27,7 @@ const updateSchema = z
     message: "Debes enviar al menos un campo a actualizar",
   });
 
+// Controlador de Alimentos
 export class AlimentosController {
   constructor(
     private readonly listAlimentos: ListAlimentos,
@@ -36,6 +37,7 @@ export class AlimentosController {
   ) {}
 
   // GET /alimentos
+  // Lista todos los alimentos
   list = async (_: Request, res: Response, next: NextFunction) => {
     try {
       const out = await this.listAlimentos.execute();
@@ -46,6 +48,7 @@ export class AlimentosController {
   };
 
   // POST /alimentos
+  // Crea un nuevo alimento
   create = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const data = createSchema.parse(req.body);
@@ -62,6 +65,7 @@ export class AlimentosController {
   };
 
   // DELETE /alimentos/:id
+  // Elimina un alimento por su ID
   delete = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { id } = idSchema.parse(req.params);
@@ -73,6 +77,7 @@ export class AlimentosController {
   };
 
   // PUT /alimentos/:id
+  // Actualiza un alimento por su ID
   update = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { id } = idSchema.parse(req.params);

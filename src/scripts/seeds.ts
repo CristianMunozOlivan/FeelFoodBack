@@ -1,6 +1,5 @@
 import 'dotenv/config';
 import { Pool } from 'pg';
-import dotenv from 'dotenv';
 function mustStr(name: string, v: unknown): string {  
   if (typeof v !== 'string' || !v.length) throw new Error(`${name} no definida o vacía`);
   return v;
@@ -14,7 +13,6 @@ async function main() {
     ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
   });
 
-  // Smoke test de conexión
   const client = await pool.connect();
   await client.query('SELECT 1');
   client.release();

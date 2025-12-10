@@ -2,10 +2,10 @@ import { Pool } from "pg";
 import Plato from "../../domain/plato.entity";
 import PlatoIngrediente from "../../domain/ingrediente.entity";
 import { PlatoRepository, CreatePlatoDTO, AddIngredienteDTO, UpdatePlatoDTO } from "../../domain/plato.repository.port";
-
+// Implementación del repositorio de Plato usando PostgreSQL
 export class PgPlatoRepository implements PlatoRepository {
   constructor(private readonly pool: Pool) {}
-
+  // Lista platos por usuario
   async listByUsuario(usuario_id: string): Promise<Plato[]> {
     const { rows } = await this.pool.query(
       `SELECT id, usuario_id, nombre
@@ -16,7 +16,7 @@ export class PgPlatoRepository implements PlatoRepository {
     );
     return rows.map(Plato.fromRow);
   }
-
+  // Crea un nuevo plato
   async create(input: CreatePlatoDTO): Promise<Plato> {
     const { rows } = await this.pool.query(
       `INSERT INTO platos_personales (usuario_id, nombre)
@@ -26,7 +26,7 @@ export class PgPlatoRepository implements PlatoRepository {
     );
     return Plato.fromRow(rows[0]);
   }
-
+  // Actualiza un plato
   async update(input: UpdatePlatoDTO): Promise<Plato> {
     const { rows } = await this.pool.query(
       `UPDATE platos_personales
@@ -37,7 +37,7 @@ export class PgPlatoRepository implements PlatoRepository {
     );
     return Plato.fromRow(rows[0]);
   }
-  
+  // Elimina un plato
   async delete(plato_id: string, usuario_id: string): Promise<void> {
     await this.pool.query(
       `DELETE FROM platos_personales
@@ -45,7 +45,7 @@ export class PgPlatoRepository implements PlatoRepository {
       [plato_id, usuario_id]
     );
   }
-
+  // Añade un ingrediente a un plato
   async addIngrediente(input: AddIngredienteDTO): Promise<PlatoIngrediente> {
     const { rows } = await this.pool.query(
       `INSERT INTO plato_ingredientes (plato_id, alimento_id, cantidad, unidad)
@@ -55,7 +55,7 @@ export class PgPlatoRepository implements PlatoRepository {
     );
     return PlatoIngrediente.fromRow(rows[0]);
   }
-
+  // Lista ingredientes de un plato
   async listIngredientes(plato_id: string): Promise<PlatoIngrediente[]> {
     const { rows } = await this.pool.query(
       `SELECT id, plato_id, alimento_id, cantidad, unidad
@@ -66,11 +66,11 @@ export class PgPlatoRepository implements PlatoRepository {
     );
     return rows.map(PlatoIngrediente.fromRow);
   }
-
+  // Elimina un ingrediente de un plato
   async removeIngrediente(ingrediente_id: string): Promise<void> {
     await this.pool.query(`DELETE FROM plato_ingredientes WHERE id = $1`, [ingrediente_id]);
   }
-
+  // Actualiza un ingrediente de un plato
   async updateIngrediente(ingrediente_id: string, input: { cantidad: number; unidad: string }): Promise<PlatoIngrediente> {
     const { rows } = await this.pool.query(
       `UPDATE plato_ingredientes

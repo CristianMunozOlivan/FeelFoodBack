@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { DiasController } from "./dias.controller";
 
+// Configuración de rutas para el módulo de Días
 export function buildDiasRouter(ctrl: DiasController): Router {
   const r = Router();
 
@@ -14,7 +15,7 @@ export function buildDiasRouter(ctrl: DiasController): Router {
   r.post("/consumos", ctrl.addConsumo);        // Añadir consumo a una comida
   r.delete("/consumos/:consumoId", ctrl.removeConsumo); // Eliminar consumo
 
-  r.post("/comidas/:comidaId/platos", ctrl.addPlatoAComida);
-  r.get("/comidas/:comidaId/platos-grupo", ctrl.listComidaPlatos);
+  r.post("/comidas/:comidaId/platos", ctrl.addPlatoAComida); // Añadir plato a una comida
+  r.get("/comidas/:comidaId/platos-grupo", ctrl.listComidaPlatos); // Listar los grupos plato-comida de una comida
   return r;
 }

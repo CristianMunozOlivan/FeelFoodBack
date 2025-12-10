@@ -2,9 +2,10 @@ import { Pool } from 'pg';
 import User from "../../domain/user.entity";
 import { UserRepository } from "../../domain/user.repository.port";
 
+// Implementación del repositorio de User usando PostgreSQL
 export class PgUserRepository implements UserRepository {
   constructor(private readonly pool: Pool) {}
-
+// Busca un usuario por su email
   async findByEmail(email: string): Promise<User | null> {
     const { rows } = await this.pool.query(
       `SELECT id, email, password, nombre, fecha_creacion
@@ -15,7 +16,7 @@ export class PgUserRepository implements UserRepository {
     );
     return rows[0] ? User.fromRow(rows[0]) : null;
   }
-
+// Busca un usuario por su ID
   async findById(id: string): Promise<User | null> {
     const { rows } = await this.pool.query(
       `SELECT id, email, password, nombre, fecha_creacion
@@ -26,7 +27,7 @@ export class PgUserRepository implements UserRepository {
     );
     return rows[0] ? User.fromRow(rows[0]) : null;
   }
-
+// Crea un nuevo usuario
   async create(email: string, nombre: string, passwordHash: string): Promise<User> {
     const { rows } = await this.pool.query(
       `INSERT INTO usuarios (email, password, nombre)

@@ -1,11 +1,10 @@
-// src/modules/usuario/domain/usuario.entity.ts
-
+// DTO usuario
 export type UsuarioDTO = {
   id: string;
   email: string;
   fecha_creacion: string | null;
 };
-
+// Definición de la entidad Usuario
 export default class Usuario {
   constructor(
     public id: string,
@@ -13,7 +12,7 @@ export default class Usuario {
     public password: string | null,
     public fecha_creacion: string | null,
   ) {}
-
+  // Convierte una fila de BD en una entidad Usuario
   static fromRow(row: any): Usuario {
     return new Usuario(
       row.id,
@@ -22,7 +21,7 @@ export default class Usuario {
       row.fecha_creacion ?? row.created_at ?? null,
     );
   }
-
+  // Convierte la entidad Usuario en un DTO
   toDTO(): UsuarioDTO {
     return {
       id: this.id,

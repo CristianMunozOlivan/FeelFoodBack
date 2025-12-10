@@ -2,6 +2,7 @@ import type { CatalogRepository } from "../domain/catalog.repository.port";
 import type { EstadoAnimoDTO } from "../domain/estadoAnimo.entity";
 import type { TipoComidaDTO } from "../domain/tipoComida.entity";
 
+// Caso de uso: listar estados de ánimo
 export class ListEstadosAnimo {
   constructor(private readonly repo: CatalogRepository) {}
   async execute(): Promise<EstadoAnimoDTO[]> {
@@ -9,7 +10,7 @@ export class ListEstadosAnimo {
     return list.map(e => e.toDTO());
   }
 }
-
+// Caso de uso: listar tipos de comida
 export class ListTiposComida {
   constructor(private readonly repo: CatalogRepository) {}
   async execute(): Promise<TipoComidaDTO[]> {

@@ -7,57 +7,55 @@ import {
   ListComidaPlatosDeComida
 } from "../../application/dias.usecase";
 
-// ──────────────────────────────────────────────────────────
-// Schemas (coinciden con tu SQL/DTOs)
-// ──────────────────────────────────────────────────────────
+// Validacion de esquema para crear día
 const createDiaSchema = z.object({
   usuario_id: z.string().uuid(),
   fecha: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
   estado_animo_inicio_id: z.coerce.number().int().positive(),
   notas: z.string().optional().nullable(),
 });
-
+// Validacion de esquema para listar días
 const listDiasSchema = z.object({
   usuario_id: z.string().uuid(),
   desde: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
   hasta: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
 });
-
+// Validacion de esquema para cerrar día
 const closeDiaSchema = z.object({
   dia_id: z.string().uuid(),
   estado_animo_final_id: z.coerce.number().int().positive(),
 });
-
+// Validacion de esquema para añadir comida
 const addComidaSchema = z.object({
   dia_id: z.string().uuid(),
   tipo_id: z.coerce.number().int().positive(),
   hora: z.string().optional(),
 });
-
+// Validacion de esquema para listar comidas de un día
 const listComidasParams = z.object({
   diaId: z.string().uuid(),
 });
-
+// Validacion de esquema para añadir consumo (alimento) a comida
 const addConsumoSchema = z.object({
   comida_id: z.string().uuid(),
   alimento_id: z.string().uuid(),
   cantidad: z.number().positive(),
   unidad: z.string().min(1),
 });
-
+// Validacion de esquema para añadir plato a comida
 const addPlatoParams = z.object({
   comidaId: z.string().uuid(),
 });
-
+// Cuerpo de la petición para añadir plato
 const addPlatoBody = z.object({
   plato_id: z.string().uuid(),
   multiplicador: z.coerce.number().positive().optional(),
 });
-
+// Validacion de esquema para listar platos de una comida
 const listComidaPlatosParams = z.object({
   comidaId: z.string().uuid(),
 });
-
+// Controlador de Días
 export class DiasController {
   constructor(
     private readonly createDiaUC: CreateDia,
@@ -72,6 +70,7 @@ export class DiasController {
   ) {}
 
   // POST /dias
+  // Crea un nuevo día
   createDia = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const data = createDiaSchema.parse(req.body);
@@ -81,6 +80,7 @@ export class DiasController {
   };
 
   // GET /dias?usuario_id=...&desde=...&hasta=...
+  // Lista días por usuario con filtros opcionales de fecha
   listDias = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const q = listDiasSchema.parse(req.query);
@@ -90,6 +90,7 @@ export class DiasController {
   };
 
   // PATCH /dias/close
+  // Cierra un día actualizando el estado de ánimo final
   closeDia = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const data = closeDiaSchema.parse(req.body);
@@ -99,6 +100,7 @@ export class DiasController {
   };
 
   // POST /comidas
+  // Añade una comida a un día
   addComida = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const data = addComidaSchema.parse(req.body);
@@ -108,6 +110,7 @@ export class DiasController {
   };
 
   // GET /:diaId/comidas
+  // Lista comidas de un día
   listComidas = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { diaId } = listComidasParams.parse(req.params);
@@ -117,6 +120,7 @@ export class DiasController {
   };
 
   // POST /consumos
+  // Añade un consumo (alimento) a una comida
   addConsumo = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const data = addConsumoSchema.parse(req.body);
@@ -126,6 +130,7 @@ export class DiasController {
   };
 
   // DELETE /consumos/:consumoId
+  // Elimina un consumo (alimento) de una comida
   removeConsumo = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const consumo_id = z.string().uuid().parse(req.params.consumoId);
@@ -135,6 +140,7 @@ export class DiasController {
   };
 
    // GET /dias/comidas/:comidaId/platos-grupo
+   // Lista los grupos plato-comida de una comida
   listComidaPlatos = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { comidaId } = listComidaPlatosParams.parse(req.params);
@@ -144,6 +150,7 @@ export class DiasController {
   };
 
   // POST /dias/comidas/:comidaId/platos
+  // Añade un plato a una comida
   addPlatoAComida = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { comidaId } = addPlatoParams.parse(req.params);

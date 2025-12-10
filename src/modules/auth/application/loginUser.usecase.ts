@@ -2,13 +2,16 @@ import type { UserRepository } from "../domain/user.repository.port";
 import type { Hasher } from "../domain/hasher.port";
 import type { TokenService } from "../domain/tokenService.port";
 
+// Caso de uso: login de usuario
 export class LoginUser {
+  // Inyección de dependencias
   constructor(
     private readonly users: UserRepository,
     private readonly hasher: Hasher,
     private readonly tokens: TokenService
   ) {}
-
+  // Ejecuta el caso de uso
+  // Devuelve token JWT y datos básicos del usuario (LOGIN)
   async execute(input: { email: string; password: string }): Promise<{ token: string, user: { id: string; email: string; nombre: string } }> {
     const email = input.email.trim().toLowerCase();
     if (!email || !input.password) throw new Error("CREDENTIALS_REQUIRED");

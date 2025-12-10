@@ -8,11 +8,11 @@ const getRequiredEnv = (name: string): string => {
   }
   return value;
 };
-
+// Configuración de entorno
 export const env = {
   NODE_ENV: process.env.NODE_ENV ?? 'development',
   PORT: Number(process.env.PORT ?? 3000),
   DATABASE_URL: getRequiredEnv('DATABASE_URL'),
-  JWT_SECRET: process.env.JWT_SECRET ?? 'AHawEdaad024',
+  JWT_SECRET: process.env.JWT_SECRET ?? 'JAHsd8hdqh82ehDHjdau9d2',
   JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN ?? '1d',
 };

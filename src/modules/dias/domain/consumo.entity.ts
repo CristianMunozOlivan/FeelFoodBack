@@ -1,12 +1,13 @@
+// Entidad Consumo: registro de consumo de un alimento en una comida
 export type ConsumoDTO = {
   id?: string;
   comida_id: string;
   alimento_id: string | null; 
   cantidad: number;
   unidad: string;
-  comida_plato_id: string | null; // relación opcional
+  comida_plato_id: string | null;
 };
-
+// Definición de la entidad Consumo y su DTO
 export default class Consumo {
   public id?: string;
 
@@ -23,19 +24,19 @@ export default class Consumo {
     this.unidad = unidad;
     this.comida_plato_id = comida_plato_id ?? null;
   }
-
+  // Convierte una fila de BD en una entidad Consumo
   static fromRow(row: any): Consumo {
-    const c = new Consumo(
+    const consumo = new Consumo(
       row.comida_id,
       row.alimento_id ?? null,
       Number(row.cantidad),
       row.unidad,
       row.comida_plato_id ?? null
     );
-    c.id = row.id;
-    return c;
+    consumo.id = row.id;
+    return consumo;
   }
-
+  // Convierte la entidad Consumo en un DTO
   toDTO(): ConsumoDTO {
     return {
       id: this.id,

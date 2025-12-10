@@ -12,13 +12,12 @@ import { buildDiasRouter } from '../modules/dias/infra/http/dias.router';
 import { buildAlimentosRouter } from '../modules/alimentos/infra/http/alimentos.router';
 import { buildPlatosRouter } from '../modules/platos/infra/http/platos.router';
 import { buildSensacionesRouter } from '../modules/sensaciones/infra/http/sensaciones.router';
-
-
 // Auth middleware
-import { buildRequireAuth /*, buildOptionalAuth */ } from '../modules/auth/infra/http/auth.middleware';
+import { buildRequireAuth} from '../modules/auth/infra/http/auth.middleware';
 import { notFound } from './http/notFound';
 import { buildUsuarioRouter } from '../modules/usuario/infra/http/usuario.router';
 
+// Crear y configurar el servidor Express
 export function createServer() {
   const app = express();
   app.use(cors());
@@ -36,8 +35,8 @@ export function createServer() {
 
   // Middlewares de auth
   const requireAuth = buildRequireAuth(env.JWT_SECRET);
-  // const optionalAuth = buildOptionalAuth(env.JWT_SECRET);
 
+  // Ruta de health check
   app.get('/health', (_req, res) => res.json({ ok: true }));
 
   // Públicas
@@ -51,11 +50,9 @@ export function createServer() {
   app.use('/sensaciones', requireAuth, buildSensacionesRouter(sensacionesController));
   app.use('/usuario', requireAuth, buildUsuarioRouter(usuarioController));
 
-  // Si alguna ruta quieres que sea semipública:
-  // app.use('/alimentos', optionalAuth, buildAlimentosRouter(alimentosController));
-  
-  app.use(notFound);     // ← 404 para cualquier ruta no coincidente
-  app.use(errorHandler); // ← manejador de errores final
+  // Middlewares finales
+  app.use(notFound);     // 404 para cualquier ruta no coincidente
+  app.use(errorHandler); // manejador de errores final
 
   return app;
 }

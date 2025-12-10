@@ -1,7 +1,7 @@
 import { readFileSync } from 'fs';
 import { resolve } from 'path';
 import { pool } from './pool';
-
+// Ejecuta la migración de creación de tablas
 async function main() {
   const sqlPath = resolve(process.cwd(), 'sql', 'creacion.sql');
   const sql = readFileSync(sqlPath, 'utf8');

@@ -1,5 +1,4 @@
-// src/modules/Sensaciones/domain/sensacionAlimento.entity.ts
-
+// SensacionAlimento Entity and DTO
 export type SensacionAlimentoDTO = {
   id?: string;
   alimento_consumido_id: string;
@@ -8,7 +7,7 @@ export type SensacionAlimentoDTO = {
   notas: string | null;
   creado_en?: string | null;
 };
-
+// Definición de la entidad SensacionAlimento y su DTO
 export default class SensacionAlimento {
   public id?: string;
 
@@ -26,9 +25,9 @@ export default class SensacionAlimento {
     this.notas = notas ?? null;
     this.creado_en = creado_en ?? null;
   }
-
+  // Convierte una fila de BD en una entidad SensacionAlimento
   static fromRow(row: any): SensacionAlimento {
-    const s = new SensacionAlimento(
+    const sensacionAlimento = new SensacionAlimento(
       row.alimento_consumido_id,
       row.tolerancia ?? null,
       Array.isArray(row.sintomas)
@@ -37,10 +36,10 @@ export default class SensacionAlimento {
       row.notas ?? null,
       row.creado_en ?? null,
     );
-    s.id = row.id;
-    return s;
+    sensacionAlimento.id = row.id;
+    return sensacionAlimento;
   }
-
+  // Convierte la entidad SensacionAlimento en un DTO
   toDTO(): SensacionAlimentoDTO {
     return {
       id: this.id,

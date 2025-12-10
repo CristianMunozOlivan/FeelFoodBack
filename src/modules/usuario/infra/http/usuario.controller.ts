@@ -1,5 +1,3 @@
-// src/modules/usuario/infra/http/usuario.controller.ts
-
 import { Request, Response, NextFunction } from "express";
 import { z } from "zod";
 import {
@@ -7,11 +5,11 @@ import {
   UpdateUsuarioEmail,
   UpdateUsuarioPassword,
 } from "../../application/usuario.useCase";
-
+// Validación para actualizar email
 const updateEmailBody = z.object({
   email: z.string().email(),
 });
-
+// Validación para actualizar contraseña
 const updatePasswordBody = z.object({
   password: z.string().min(6, "La contraseña debe tener al menos 6 caracteres"),
 });
@@ -22,16 +20,16 @@ export class UsuarioController {
     private readonly updateEmailUC: UpdateUsuarioEmail,
     private readonly updatePasswordUC: UpdateUsuarioPassword,
   ) {}
-
+  // Extrae el userId del request autenticado
   private getUserIdFromReq(req: Request): string {
-    // Igual que en otros controladores protegidos:
     const user = (req as any).user;
     if (!user?.id) {
       throw new Error("No se encontró el usuario en la request");
     }
     return user.id;
   }
-
+  // GET /usuario/perfil
+  // Obtiene el perfil del usuario autenticado
   getPerfil = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const userId = this.getUserIdFromReq(req);
@@ -44,7 +42,8 @@ export class UsuarioController {
       next(e);
     }
   };
-
+  // PUT /usuario/email
+  // Actualiza el email del usuario autenticado
   updateEmail = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const userId = this.getUserIdFromReq(req);
@@ -55,7 +54,8 @@ export class UsuarioController {
       next(e);
     }
   };
-
+  // PUT /usuario/password
+  // Actualiza la contraseña del usuario autenticado
   updatePassword = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const userId = this.getUserIdFromReq(req);
